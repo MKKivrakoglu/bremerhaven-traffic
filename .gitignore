@@ -1,0 +1,27 @@
+# Local recovery material and the original server snapshot
+/*.tar.gz
+/infra-2025-d/
+
+# Local deployment settings
+/config/runtime.env
+/config/mariadb.cnf
+
+# Server runtime data
+/var/
+/data/log/
+*.log
+*.pid
+/queue/head
+/queue/tail
+/queue/checkTimestamp
+/queue/graph.dat
+/queue/node-*
+/queue/lockdir/
+/queue/mail/*
+!/queue/mail/email.sh
+!/queue/mail/README.md
+
+# Editor and build output
+*.swp
+*.class
+*.jar
