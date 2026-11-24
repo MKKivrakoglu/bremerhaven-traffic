@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Schiffsdaten</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; font-family: sans-serif; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    th { background: #f2f2f2; }
+  </style>
+
+  <script defer>
+  async function loadData() {
+    const res = await fetch("/cgi-bin/generateTable.sh");
+    const text = await res.text();
+    const tbody = document.querySelector("#ships tbody");
+    tbody.innerHTML = "";
+
+    text.trim().split("\n").forEach(line => {
+      
+      const cols = line.split("|");
+      const tr = document.createElement("tr");
+
+      cols.forEach(c => {
+        const td = document.createElement("td");
+        td.textContent = c === "NULL" ? "" : c; 
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadData();
+    setInterval(loadData, 1000); // Jede Sekunde neu laden
+  });
+</script>
+
+
+</head>
+<body>
+  <h2>Aktuelle Schiffspositionen</h2>
+  <table id="ships">
+    <thead>
+      <tr>
+        <th>Type</th><th>MMSI</th><th>Name</th><th>Callsign</th>
+        <th>Longitude</th><th>Latitude</th><th>Datum</th>
+        <th>Speed</th><th>Radio</th><th>IMO</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</body>
+</html>
+

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nicht MarineTraffic</title>
+
+    <link rel="stylesheet" href="style1.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" ></script>
+
+    <script src="../js/generateTable.js" ></script>
+    <script src="livetraffic2.js" ></script>
+    <script src="script2.js" ></script>
+  </head>
+
+  <body>
+    <header>
+      <ul>
+        <a href="https://informatik.hs-bremerhaven.de/ahmalmardini/" target="_blank"><li>Ahmad</li></a>
+        <a href="https://informatik.hs-bremerhaven.de/eliolcabey/" target="_blank"><li>Elif</li></a>
+        <a href="https://informatik.hs-bremerhaven.de/mohalhamdan/" target="_blank"><li>Mohammad</li></a>
+        <a href="https://informatik.hs-bremerhaven.de/muskivrakoglu/" target="_blank"><li>Mustafa</li></a>
+      </ul>
+        <button id="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <main>
+      <h1 id="header">Der Schiffsverkehr</h1>
+
+      <!-- LOGIN -->
+      <button class="accordion">Login</button>
+      <div class="panel">
+        <h2 id="login-header">Anmelden</h2>
+        <div id="login-area">
+          <input type="text" id="userInput" placeholder="E-Mail" />
+          <br />
+          <input type="password" id="passwordInput" placeholder="Passwort" />
+          <br />
+          <button onclick="login()">Login</button>
+          <div id="login-message" class="login-message"></div>
+        </div>
+      </div>
+
+      <!-- MAP -->
+      <button class="accordion disabled">Map</button>
+      <div class="panel">
+        <h2>Live Karte</h2>
+        <div id="map" style="width:100%; height:500px;"></div>
+      </div>
+
+      <!-- INFO -->
+      <button class="accordion disabled">Info</button>
+      <div class="panel">
+        <h2>Schiffs-Informationen</h2>
+        <div id="output" style="margin-top:20px;"></div>
+        <div class="table-container">
+         <table id="ships">
+            <thead>
+              <tr>
+                <th>Type</th><th>MMSI</th><th>Name</th><th>Callsign</th>
+                <th>Longitude</th><th>Latitude</th><th>Datum</th>
+                <th>Speed</th><th>Radio</th><th>IMO</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+      </div>
+    </main>
+
+    <footer></footer>
+  </body>
+</html>
+
+

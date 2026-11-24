@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Schiffe auf Karte</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    #map { height: 600px; width: 100%; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    h1 { padding: 10px; margin: 0; }
+  </style>
+
+  <script>
+    let map;
+    let markers = {};
+    let tracks = {};
+    let positions = {};
+
+    function ladeSchiffe() {
+      let xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          let lines = xhr.responseText.trim().split("\n");
+          positions = {};
+
+          lines.forEach(line => {
+            let parts = line.split("|");
+            if (parts.length < 5) return; // unvollständige Zeilen überspringen
+
+            let [mmsi, name, lat, lon, datum] = parts;
+            let latNum = parseFloat(lat);
+            let lonNum = parseFloat(lon);
+
+
+            if (!positions[mmsi]) {
+              positions[mmsi] = { name: name, coords: [], lastDatum: datum };
+            }
+            positions[mmsi].coords.push([latNum, lonNum]);
+            positions[mmsi].lastDatum = datum;
+          });
+
+          // Marker aktualisieren oder setzen
+          Object.keys(positions).forEach(mmsi => {
+            let ship = positions[mmsi];
+            let last = ship.coords[ship.coords.length - 1];
+
+            if (!markers[mmsi]) {
+              markers[mmsi] = L.marker(last).addTo(map)
+                .bindPopup(ship.name + "<br>Letztes Signal: " + ship.lastDatum);
+
+              markers[mmsi].on("click", function () {
+                if (tracks[mmsi]) {
+                  map.removeLayer(tracks[mmsi]);
+                  delete tracks[mmsi];
+                } else {
+                  tracks[mmsi] = L.polyline(ship.coords, { color: "blue" }).addTo(map);
+                }
+              });
+            } else {
+              markers[mmsi].setLatLng(last);
+              markers[mmsi].getPopup()
+                .setContent(ship.name + "<br>Letztes Signal: " + ship.lastDatum);
+            }
+          });
+
+          // Inaktive Schiffe entfernen
+          let now = new Date();
+          Object.keys(markers).forEach(mmsi => {
+            if (!positions[mmsi]) return;
+            let lastDatum = new Date(positions[mmsi].lastDatum);
+            let diffMinutes = (now - lastDatum) / 1000 / 60;
+            if (diffMinutes > 5) {
+              map.removeLayer(markers[mmsi]);
+              delete markers[mmsi];
+              if (tracks[mmsi]) {
+                map.removeLayer(tracks[mmsi]);
+                delete tracks[mmsi];
+              }
+            }
+          });
+        }
+      };
+      xhr.open("GET", "/cgi-bin/Schiffsdaten.sh");
+      xhr.send();
+    }
+
+    window.onload = function () {
+      // Karte aufbauen
+      map = L.map('map').setView([53.55, 8.58], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
+
+      // Initial laden + regelmäßig aktualisieren
+      ladeSchiffe();
+      setInterval(ladeSchiffe, 1000);
+    };
+  </script>
+</head>
+<body>
+  <h1>Schiffe mit Routen (letzte Stunde)</h1>
+  <div id="map"></div>
+</body>
+</html>
