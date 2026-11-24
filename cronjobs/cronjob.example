@@ -1,0 +1,4 @@
+# Replace /path/to/bremerhaven-traffic with the installed project directory.
+* * * * * /path/to/bremerhaven-traffic/cronjobs/watcher.sh
+0 5 * * * /path/to/bremerhaven-traffic/cronjobs/cleanup_data.sh
+* * * * * /path/to/bremerhaven-traffic/cronjobs/cleanup_sessions.sh
